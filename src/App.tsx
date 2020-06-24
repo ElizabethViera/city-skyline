@@ -47,7 +47,7 @@ function genBuildings() {
       mesh.position.x = i;
       mesh.position.y = j / 10 - 0.4;
       buildings.add(mesh)
-      if (lights > 4 && (Math.floor((100 * j + 10 * i + lights)) % 3) == 2) {
+      if (lights > 4 && (Math.floor((100 * j + 10 * i + lights)) % 3) === 2) {
         const light = new THREE.BoxGeometry(.005 * lights, .01, .2)
         const lightMesh = new THREE.Mesh(light, new THREE.MeshBasicMaterial({ color: 0xFFFFFF }))
         lightMesh.position.x = i - .03;
@@ -62,7 +62,7 @@ function genBuildings() {
       mesh.position.y = j / 10 - 0.5;
       buildings.add(mesh)
 
-      if (lights > 4 && (Math.floor((100 * -j + 10 * i + lights)) % 3) == 2) {
+      if (lights > 4 && (Math.floor((100 * -j + 10 * i + lights)) % 3) === 2) {
         const light = new THREE.BoxGeometry(.005 * lights, .01, .2)
         const lightMesh = new THREE.Mesh(light, new THREE.MeshBasicMaterial({ color: 0xCCCCFF }))
         lightMesh.position.x = i - .03;
