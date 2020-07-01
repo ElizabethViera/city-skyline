@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { Color } from 'three';
 
 const currentTime = new Date().getHours()
+// const currentTime = 6
 const skyColors = [
   0x000000, 0x1E0336, 0x2A044A, 0x370561, 0x3E1C80,
   0x573180, 0x693880, 0x773C80, 0x234AC2, 0x4070C2,
@@ -12,7 +13,37 @@ const skyColors = [
   0x3E1C80, 0x370561, 0x2A044A, 0x1E0336,
 ]
 const skyColor = skyColors[currentTime];
-const waterColor = 0xAAAAFF;
+const waterRGB = { r: 80, g: 100, b: 180 }
+const waterShade = gradient({ r: new Color(skyColor).r * 255, g: new Color(skyColor).g, b: new Color(skyColor).b }, waterRGB, 5)[3]
+const waterColor = RGBtoColor(waterShade)
+
+const buildingRGB = { r: 170, g: 170, b: 170 }
+const pink = { r: 51, g: 79, b: 181 }
+const buildingColor = new Color(`rgb(${buildingRGB.r}, ${buildingRGB.g}, ${buildingRGB.b})`)
+const buildingColors = gradient(pink, buildingRGB, 35).map((color) => RGBtoColor(color))
+
+
+function RGBtoColor(c: RGBColor): Color {
+  return new Color(`rgb(${Math.floor(c.r)}, ${Math.floor(c.g)}, ${Math.floor(c.b)})`)
+}
+
+type RGBColor = { r: number, g: number, b: number }
+
+function lerpNum(top: number, bottom: number, t: number): number {
+  return top * (1 - t) + bottom * (t)
+}
+
+function lerpColor(top: RGBColor, bottom: RGBColor, t: number): RGBColor {
+  return {
+    r: lerpNum(top.r, bottom.r, t),
+    g: lerpNum(top.g, bottom.g, t),
+    b: lerpNum(top.b, bottom.b, t),
+  }
+}
+
+function gradient(top: RGBColor, bottom: RGBColor, steps: number): RGBColor[] {
+  return new Array(steps).fill(null).map((_, i) => lerpColor(top, bottom, i / (steps - 1)))
+}
 
 function randBetween(lo: number, hi: number): number {
   const range = hi - lo + 1;
@@ -25,7 +56,7 @@ function genBackGroundBuildings() {
     let height = randBetween(6, 9)
     for (let j = height; j >= 0; j -= 1) {
       const box = new THREE.BoxGeometry(.1, .1, .1)
-      const mesh = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: 0x888888 }))
+      const mesh = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: 0x887CA3 }))
       mesh.position.x = i;
       mesh.position.y = j / 10 - 0.4;
       buildings.add(mesh)
@@ -43,7 +74,7 @@ function genBuildings() {
     for (let j = height; j >= 0; j -= 1) {
 
       const box = new THREE.BoxGeometry(.1, .1, .1)
-      const mesh = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: 0xAAAAAA }))
+      const mesh = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: buildingColors[j + 20] }))
       mesh.position.x = i;
       mesh.position.y = j / 10 - 0.4;
       buildings.add(mesh)
@@ -57,7 +88,7 @@ function genBuildings() {
     }
     for (let j = -1 * height; j <= 0; j += 1) {
       const box = new THREE.BoxGeometry(.1, .1, .1)
-      const mesh = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: 0x8888AA }))
+      const mesh = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: buildingColors[-1 * j + 4] }))
       mesh.position.x = i;
       mesh.position.y = j / 10 - 0.5;
       buildings.add(mesh)
