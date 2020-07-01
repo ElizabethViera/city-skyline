@@ -19,7 +19,7 @@ const waterColor = RGBtoColor(waterShade)
 
 const buildingRGB = { r: 170, g: 170, b: 170 }
 const pink = { r: 51, g: 79, b: 181 }
-const buildingColor = new Color(`rgb(${buildingRGB.r}, ${buildingRGB.g}, ${buildingRGB.b})`)
+// const buildingColor = new Color(`rgb(${buildingRGB.r}, ${buildingRGB.g}, ${buildingRGB.b})`)
 const buildingColors = gradient(pink, buildingRGB, 35).map((color) => RGBtoColor(color))
 
 
