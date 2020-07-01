@@ -2,9 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import './App.css';
 import * as THREE from 'three';
 import { Color } from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 
 const currentTime = new Date().getHours()
-// const currentTime = 6
+// const currentTime = 14
 const skyColors = [
   0x000000, 0x1E0336, 0x2A044A, 0x370561, 0x3E1C80,
   0x573180, 0x693880, 0x773C80, 0x234AC2, 0x4070C2,
@@ -154,7 +155,60 @@ async function draw(container: HTMLElement) {
   const sky = genSky()
   const background = genBackGroundBuildings()
   const buildings = genBuildings()
-  scene.add(water, sky, background, buildings)
+
+  // load boat
+  const boat = await new Promise<THREE.Group>((resolve) => {
+    const boat_loader = new OBJLoader()
+    boat_loader.load('/boat.obj', resolve);
+  })
+
+  // load boat reflection
+  const boatRef = await new Promise<THREE.Group>((resolve) => {
+    const boat_loader = new OBJLoader()
+    boat_loader.load('/boat.obj', resolve);
+  })
+
+  boat.scale.x = .1
+  boat.scale.y = .1
+  boat.scale.z = .1
+  boat.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI / 2)
+  console.log(boat.position.y)
+  boat.position.z += .15
+  boat.position.y -= .45
+  const boatPosX = randBetween(-10, 10) / 4
+  boat.position.x = boatPosX
+
+  let boatCount = 0
+  boat.traverse((obj) => {
+    if (obj instanceof THREE.Mesh) {
+      console.log(boatCount)
+      boatCount += 1
+      const boatColor = boatCount === 1 ? 0xA37C87 : 0xDBBFE0
+      obj.geometry.computeVertexNormals();
+      obj.material = new THREE.MeshBasicMaterial({ color: new THREE.Color(boatColor) })
+    }
+  })
+
+  boatRef.scale.x = .1
+  boatRef.scale.y = .1
+  boatRef.scale.z = .1
+  boatRef.rotateOnAxis(new THREE.Vector3(0, 1, 0), 3 * Math.PI / 2)
+  boatRef.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI)
+  boatRef.position.z += .15
+  boatRef.position.y -= .66
+  boatRef.position.x = boatPosX
+  let boatRefCount = 0
+  boatRef.traverse((obj) => {
+    if (obj instanceof THREE.Mesh) {
+      console.log(boatRefCount)
+      boatRefCount += 1
+      const boatColor = boatRefCount === 1 ? 0x866CA3 : 0xADACDE
+      obj.geometry.computeVertexNormals();
+      obj.material = new THREE.MeshBasicMaterial({ color: new THREE.Color(boatColor) })
+    }
+  })
+
+  scene.add(water, sky, background, buildings, boat, boatRef)
   renderer.render(scene, camera)
 }
 
