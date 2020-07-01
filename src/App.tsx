@@ -195,7 +195,7 @@ async function draw(container: HTMLElement) {
   boatRef.rotateOnAxis(new THREE.Vector3(0, 1, 0), 3 * Math.PI / 2)
   boatRef.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI)
   boatRef.position.z += .15
-  boatRef.position.y -= .66
+  boatRef.position.y -= .65
   boatRef.position.x = boatPosX
   let boatRefCount = 0
   boatRef.traverse((obj) => {
