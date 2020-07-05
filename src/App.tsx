@@ -5,13 +5,42 @@ import { Color } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 
 const currentTime = new Date().getHours()
-// const currentTime = 14
+// const currentTime = 23
 const skyColors = [
   0x000000, 0x1E0336, 0x2A044A, 0x370561, 0x3E1C80,
   0x573180, 0x693880, 0x773C80, 0x234AC2, 0x4070C2,
   0x4A81E0, 0x57B9E0, 0x83DAE0, 0x57B9E0, 0x4A81E0,
   0x4070C2, 0x234AC2, 0xE0548E, 0x693880, 0x573180,
   0x3E1C80, 0x370561, 0x2A044A, 0x1E0336,
+]
+
+const cloudColors = [
+  { c1: 0x343440, c2: 0x59596E },
+  { c1: 0x3D104A, c2: 0x5C4A70 },
+  { c1: 0x55458F, c2: 0x9797BA },
+  { c1: 0x6A56B3, c2: 0xA3A3C9 },
+  { c1: 0x6757B5, c2: 0xB6B6E0 },
+  { c1: 0xB1B0F5, c2: 0xCFCFFF },
+  { c1: 0xEDACF5, c2: 0xF5CCC7 },
+  { c1: 0xE98CF5, c2: 0xF5BCDD },
+  { c1: 0x697AF5, c2: 0xB6CDF4 },
+  { c1: 0x73AAF5, c2: 0x9BCFF5 },
+  { c1: 0x73AAF5, c2: 0xAFD9F4 },
+  { c1: 0x54D0F5, c2: 0xB6E4F2 },
+  { c1: 0xA0F4F2, c2: 0xDFF3F4 },
+  { c1: 0x54D0F5, c2: 0xB6E4F2 },
+  { c1: 0x73AAF5, c2: 0xAFD9F4 },
+  { c1: 0x73AAF5, c2: 0x9BCFF5 },
+  { c1: 0x697AF5, c2: 0xB6CDF4 },
+  { c1: 0xF58083, c2: 0xF5CFAD },
+  { c1: 0xB1B0F5, c2: 0xCFCFFF },
+  { c1: 0xB1B0F5, c2: 0xCFCFFF },
+  { c1: 0x6757B5, c2: 0xB6B6E0 },
+  { c1: 0x6A56B3, c2: 0xA3A3C9 },
+  { c1: 0x55458F, c2: 0x9797BA },
+  { c1: 0x3D104A, c2: 0x5C4A70 },
+
+
 ]
 const skyColor = skyColors[currentTime];
 const waterRGB = { r: 80, g: 100, b: 180 }
@@ -156,6 +185,48 @@ async function draw(container: HTMLElement) {
   const background = genBackGroundBuildings()
   const buildings = genBuildings()
 
+  // load cloud
+  const cloud = await new Promise<THREE.Group>((resolve) => {
+    const cloud_loader = new OBJLoader()
+    cloud_loader.load('/cloud.obj', resolve);
+  })
+
+  cloud.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI)
+
+  cloud.scale.x = .1
+  cloud.scale.y = .1
+  cloud.scale.z = .1
+  cloud.position.z += .15
+  cloud.position.y += .9
+  const cloudPosX = randBetween(-15, 5) / 4
+  cloud.position.x = cloudPosX
+
+
+
+
+
+
+  let cloudCount = 0
+  cloud.traverse((obj) => {
+    if (obj instanceof THREE.Mesh) {
+      console.log(cloudCount)
+      cloudCount += 1
+      const cloudColor = cloudCount === 1 ? cloudColors[currentTime].c1 : cloudColors[currentTime].c2
+      obj.geometry.computeVertexNormals();
+      obj.material = new THREE.MeshBasicMaterial({ color: new THREE.Color(cloudColor) })
+    }
+  })
+
+  const numClouds = randBetween(0, 8)
+
+  const cloudMesh = new THREE.Group()
+  for (var cloudsCount = 0; cloudsCount < numClouds; cloudsCount++) {
+    const newCloud = cloud.clone()
+    const newCloudPosX = randBetween(-15, 5) / 4
+    newCloud.position.x = newCloudPosX
+    cloudMesh.add(newCloud)
+  }
+
   // load boat
   const boat = await new Promise<THREE.Group>((resolve) => {
     const boat_loader = new OBJLoader()
@@ -172,7 +243,6 @@ async function draw(container: HTMLElement) {
   boat.scale.y = .1
   boat.scale.z = .1
   boat.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI / 2)
-  console.log(boat.position.y)
   boat.position.z += .15
   boat.position.y -= .45
   const boatPosX = randBetween(-10, 10) / 4
@@ -208,7 +278,7 @@ async function draw(container: HTMLElement) {
     }
   })
 
-  scene.add(water, sky, background, buildings, boat, boatRef)
+  scene.add(water, sky, background, buildings, boat, boatRef, cloudMesh)
   renderer.render(scene, camera)
 }
 
