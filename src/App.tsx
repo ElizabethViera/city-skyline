@@ -217,12 +217,17 @@ async function draw(container: HTMLElement) {
     }
   })
 
-  const numClouds = randBetween(0, 8)
+  const numClouds = randBetween(0, 12)
 
   const cloudMesh = new THREE.Group()
   for (var cloudsCount = 0; cloudsCount < numClouds; cloudsCount++) {
     const newCloud = cloud.clone()
     const newCloudPosX = randBetween(-15, 5) / 4
+
+    const cloudOffset = randBetween(-2, 4) / 10
+    const cloudStretch = randBetween(8, 20) / 100
+    newCloud.scale.x = cloudStretch
+    newCloud.position.y += cloudOffset
     newCloud.position.x = newCloudPosX
     cloudMesh.add(newCloud)
   }
