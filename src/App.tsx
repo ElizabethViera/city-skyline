@@ -7,7 +7,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 async function fetchCloudiness() {
   const cloudiness = await fetch('https://city-skyline.netlify.app/.netlify/functions/weather')
   const jsonBlob = await cloudiness.json()
-  return jsonBlob.clouds.all
+  return { clouds: jsonBlob.clouds.all, temp: jsonBlob.main.feels_like }
 }
 
 const currentTime = new Date().getHours()
@@ -223,12 +223,15 @@ async function draw(container: HTMLElement) {
     }
   })
 
-  const numClouds = await fetchCloudiness()
+  const weather = await fetchCloudiness()
+  // const weather = { clouds: 20, temp: 45.3 }
+  const numClouds = weather.clouds * 2.5
+  // const temperature = weather.temp
 
   const cloudMesh = new THREE.Group()
   for (var cloudsCount = 0; cloudsCount < numClouds; cloudsCount++) {
     const newCloud = cloud.clone()
-    const newCloudPosX = randBetween(-15, 5) / 4
+    const newCloudPosX = randBetween(-15, 9) / 4
 
     const cloudOffset = randBetween(-2, 4) / 10
     const cloudStretch = randBetween(8, 20) / 100
@@ -262,7 +265,6 @@ async function draw(container: HTMLElement) {
   let boatCount = 0
   boat.traverse((obj) => {
     if (obj instanceof THREE.Mesh) {
-      console.log(boatCount)
       boatCount += 1
       const boatColor = boatCount === 1 ? 0xA37C87 : 0xDBBFE0
       obj.geometry.computeVertexNormals();
