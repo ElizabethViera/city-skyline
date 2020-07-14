@@ -4,8 +4,8 @@ import * as THREE from 'three';
 import { Color } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 
-// const currentTime = new Date().getHours()
-const currentTime = 23
+const currentTime = new Date().getHours()
+// const currentTime = 23
 const skyColors = [
   0x000000, 0x1E0336, 0x2A044A, 0x370561, 0x3E1C80,
   0x573180, 0x693880, 0x773C80, 0x234AC2, 0x4070C2,
