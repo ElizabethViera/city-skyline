@@ -4,6 +4,12 @@ import * as THREE from 'three';
 import { Color } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 
+async function fetchCloudiness() {
+  const cloudiness = await fetch('https://city-skyline.netlify.app/.netlify/functions/weather')
+  const jsonBlob = await cloudiness.json()
+  return jsonBlob.clouds.all
+}
+
 const currentTime = new Date().getHours()
 // const currentTime = 23
 const skyColors = [
@@ -217,7 +223,7 @@ async function draw(container: HTMLElement) {
     }
   })
 
-  const numClouds = randBetween(0, 12)
+  const numClouds = await fetchCloudiness()
 
   const cloudMesh = new THREE.Group()
   for (var cloudsCount = 0; cloudsCount < numClouds; cloudsCount++) {
